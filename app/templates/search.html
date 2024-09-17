@@ -1,0 +1,38 @@
+<!-- templates/search.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medical Term Search</title>
+    <script>
+        async function getSuggestions() {
+            const userInput = document.getElementById('search-input').value;
+            const response = await fetch('/suggest_terms/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ user_input: userInput })
+            });
+            const data = await response.json();
+            const suggestionsDiv = document.getElementById('suggestions');
+            suggestionsDiv.innerHTML = '';
+            if (data.suggestions) {
+                data.suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.textContent = suggestion;
+                    suggestionsDiv.appendChild(div);
+                });
+            } else {
+                suggestionsDiv.textContent = data.error;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Medical Term Search</h1>
+    <input type="text" id="search-input" placeholder="Enter term" onkeyup="getSuggestions()">
+    <div id="suggestions"></div>
+</body>
+</html>
